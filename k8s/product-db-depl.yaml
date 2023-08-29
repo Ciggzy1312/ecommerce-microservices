@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-db-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-product-db
+  template:
+    metadata:
+      labels:
+        app: ms-product-db
+    spec:
+      containers:
+      - name: ms-product-db
+        image: mongo
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-db-srv
+spec:
+  selector:
+    app: ms-product-db
+  ports:
+    - name: ms-product-db
+      protocol: TCP
+      port: 27017
+      targetPort: 27017

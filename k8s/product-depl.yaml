@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-depl
+  labels:
+    app: ms-product
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-product
+  template:
+    metadata:
+      labels:
+        app: ms-product
+    spec:
+      containers:
+      - name: ms-product
+        image: ciggzy/ms-product
+        imagePullPolicy: Never
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-srv
+spec:
+  selector:
+    app: ms-product
+  ports:
+    - name: ms-product
+      protocol: TCP
+      port: 8001
+      targetPort: 8001
