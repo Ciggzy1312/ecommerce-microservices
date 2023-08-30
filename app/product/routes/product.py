@@ -52,6 +52,4 @@ async def update_product_by_id(id: str, product: ProductUpdateSchema, currentUse
     if error:
         return JSONResponse(status_code=400, content={"message": error})
 
-    print(productUpdated)
-
     return JSONResponse(status_code=200, content={"message": "Product updated successfully"})

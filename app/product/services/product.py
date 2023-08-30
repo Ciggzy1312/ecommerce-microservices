@@ -2,10 +2,16 @@ from bson import ObjectId
 from utils.database import Product
 from serializers.product import product_serializer
 from utils.validator import remove_none_values
+from events.publisher.product import productCreatedPublisher, productUpdatedPublisher
 
 async def createProduct(payload: dict):
     try:
         product = await Product.insert_one(payload)
+
+        createdProduct = await Product.find_one({"_id": product.inserted_id})
+
+        await productCreatedPublisher("product_created", createdProduct)
+
         return product, None
     except Exception as e:
         return None, str(e)
@@ -24,7 +30,6 @@ async def getProducts():
 async def getProduct(id: str):
     try:
         product = await Product.find_one({"_id": ObjectId(id)})
-        print(product)
         if not product:
             return None, "Product not found"
 
@@ -45,6 +50,10 @@ async def updateProduct(id: str, userId: str, payload: dict):
         productUpdated = await Product.update_one({"_id": ObjectId(id)}, {"$set": remove_none_values(payload)})
         if not productUpdated:
             return None, "Error updating product"
+
+        updatedProduct = await Product.find_one({"_id": ObjectId(id)})
+
+        await productUpdatedPublisher("product_updated", updatedProduct)
 
         return productUpdated, None
     except Exception as e:
