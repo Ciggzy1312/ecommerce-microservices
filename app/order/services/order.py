@@ -87,3 +87,21 @@ async def getOrder(id: str, userId: str):
         return order_serializer(order[0]), None
     except Exception as e:
         return None, str(e)
+
+
+async def cancelOrder(id: str, userId: str):
+    try:
+        orderExists = await Order.find_one({"_id": ObjectId(id)})
+        if not orderExists:
+            return None, "Order not found"
+
+        if ObjectId(orderExists["createdBy"]) != userId:
+            return None, "Not authorized to cancel this order"
+
+        orderCancelled = await Order.update_one({"_id": ObjectId(id)}, {"$set": {"status": "CANCELLED"}})
+        if not orderCancelled:
+            return None, "Error cancelling order"
+
+        return orderCancelled, None
+    except Exception as e:
+        return None, str(e)
