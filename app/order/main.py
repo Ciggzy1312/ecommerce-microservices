@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from events.subscriber.base import baseSubscriber
 
+from api import router
+
 app = FastAPI()
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+app.include_router(router)
 
 @app.on_event("startup")
 async def startup_event():
