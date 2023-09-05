@@ -4,6 +4,7 @@ class ProductCreateSchema(BaseModel):
     name: str
     description: str
     price: str
+    orderId: str = None
     createdBy: str = None
 
 class ProductUpdateSchema(BaseModel):

@@ -6,5 +6,6 @@ def product_serializer(product) -> dict:
         'name': product["name"],
         'description': product["description"],
         'price': product["price"],
+        'orderId': product["orderId"] if product.get("orderId") else None,
         'createdBy': str(ObjectId(product["createdBy"])),
     }

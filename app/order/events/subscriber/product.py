@@ -8,10 +8,9 @@ from utils.database import Product
 async def productCreatedSubscriber(payload):
     try:
         payload = product_serializer(ast.literal_eval(payload))
-        product = await Product.insert_one(payload)
-        print("Successfully created product in order service")
+        await Product.insert_one(payload)
 
-        return product, None
+        return "Successfully created product in order service", None
     except Exception as e:
         return None, str(e)
 
@@ -19,9 +18,8 @@ async def productCreatedSubscriber(payload):
 async def productUpdatedSubscriber(payload):
     try:
         payload = product_serializer(ast.literal_eval(payload))
-        product = await Product.update_one({"_id": payload["_id"]}, {"$set": remove_none_values(payload)})
-        print("Successfully updated product in order service")
+        await Product.update_one({"_id": payload["_id"]}, {"$set": remove_none_values(payload)})
 
-        return product, None
+        return "Successfully updated product in order service", None
     except Exception as e:
         return None, str(e)

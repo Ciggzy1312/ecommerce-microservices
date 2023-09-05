@@ -1,11 +1,11 @@
 import aio_pika
-from events.subscriber.product import productCreatedSubscriber, productUpdatedSubscriber
+from events.subscriber.order import orderCreatedSubscriber, orderCancelledSubscriber
 
 async def on_message(msg: aio_pika.IncomingMessage):
     exchangeName = msg.exchange
 
-    if exchangeName == "ProductCreated":
-        message, error = await productCreatedSubscriber(msg.body.decode("utf-8"))
+    if exchangeName == "OrderCreated":
+        message, error = await orderCreatedSubscriber(msg.body.decode("utf-8"))
         if error:
             print(error)
             return
@@ -13,8 +13,8 @@ async def on_message(msg: aio_pika.IncomingMessage):
         print(message)
         await msg.ack()
 
-    elif exchangeName == "ProductUpdated":
-        message, error = await productUpdatedSubscriber(msg.body.decode("utf-8"))
+    elif exchangeName == "OrderCancelled":
+        message, error = await orderCancelledSubscriber(msg.body.decode("utf-8"))
         if error:
             print(error)
             return

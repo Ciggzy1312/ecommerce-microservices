@@ -4,6 +4,7 @@ from bson import ObjectId
 from utils.database import Product, Order
 
 from serializers.order import order_serializer
+from events.publisher.order import orderCreatedPublisher, orderCancelledPublisher
 
 EXPIRATION_TIME = 60
 
@@ -26,9 +27,28 @@ async def createOrder(payload: dict):
         payload["status"] = "CREATED"
         payload["productId"] = ObjectId(payload["productId"])
 
-        print(payload)
-
         order = await Order.insert_one(payload)
+
+        pipeline = [
+            {
+                "$match": {
+                    "_id": order.inserted_id
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "product",
+                    "localField": "productId",
+                    "foreignField": "_id",
+                    "as": "product"
+                }
+            }
+        ]
+
+        orderCreated = await Order.aggregate(pipeline).to_list(1)
+
+        await orderCreatedPublisher("OrderCreated", orderCreated[0])
+
         return order, None
     except Exception as e:
         return None, str(e)
@@ -98,10 +118,30 @@ async def cancelOrder(id: str, userId: str):
         if ObjectId(orderExists["createdBy"]) != userId:
             return None, "Not authorized to cancel this order"
 
-        orderCancelled = await Order.update_one({"_id": ObjectId(id)}, {"$set": {"status": "CANCELLED"}})
-        if not orderCancelled:
+        order = await Order.update_one({"_id": ObjectId(id)}, {"$set": {"status": "CANCELLED"}})
+        if not order:
             return None, "Error cancelling order"
 
-        return orderCancelled, None
+        pipeline = [
+            {
+                "$match": {
+                    "_id": ObjectId(id)
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "product",
+                    "localField": "productId",
+                    "foreignField": "_id",
+                    "as": "product"
+                }
+            }
+        ]
+
+        orderCancelled = await Order.aggregate(pipeline).to_list(1)
+
+        await orderCancelledPublisher("OrderCancelled", orderCancelled[0])
+
+        return order, None
     except Exception as e:
         return None, str(e)
