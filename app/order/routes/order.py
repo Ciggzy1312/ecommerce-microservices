@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from bson import ObjectId
 
 from models.order import OrderCreateSchema
-from services.order import createOrder, getOrders
+from services.order import createOrder, getOrders, getOrder
 from dependency import get_current_user
 
 router = APIRouter(prefix="/order")
@@ -31,3 +31,13 @@ async def getOrdersHandler(currentUser: dict = Depends(get_current_user)):
         return JSONResponse(status_code=400, content={"message": error})
 
     return JSONResponse(status_code=200, content={"message": "Orders fetched successfully", "orders": orders})
+
+
+# Get Order -> GET /api/order/{id}
+@router.get("/{id}")
+async def getOrderHandler(id: str, currentUser: dict = Depends(get_current_user)):
+    order, error = await getOrder(id, ObjectId(currentUser["id"]))
+    if error:
+        return JSONResponse(status_code=400, content={"message": error})
+
+    return JSONResponse(status_code=200, content={"message": "Order fetched successfully", "order": order})

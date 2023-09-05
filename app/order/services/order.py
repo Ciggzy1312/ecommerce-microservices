@@ -59,3 +59,31 @@ async def getOrders(userId: str):
         return ordersList, None
     except Exception as e:
         return None, str(e)
+
+
+async def getOrder(id: str, userId: str):
+    try:
+        pipeline = [
+            {
+                "$match": {
+                    "_id": ObjectId(id),
+                    "createdBy": ObjectId(userId)
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "product",
+                    "localField": "productId",
+                    "foreignField": "_id",
+                    "as": "product"
+                }
+            }
+        ]
+
+        order = await Order.aggregate(pipeline).to_list(1)
+        if not order:
+            return None, "Order not found"
+
+        return order_serializer(order[0]), None
+    except Exception as e:
+        return None, str(e)
