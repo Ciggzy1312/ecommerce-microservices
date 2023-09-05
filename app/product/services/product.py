@@ -10,7 +10,7 @@ async def createProduct(payload: dict):
 
         createdProduct = await Product.find_one({"_id": product.inserted_id})
 
-        await productCreatedPublisher("product_created", createdProduct)
+        await productCreatedPublisher("ProductCreated", createdProduct)
 
         return product, None
     except Exception as e:
@@ -44,7 +44,7 @@ async def updateProduct(id: str, userId: str, payload: dict):
         if not productExists:
             return None, "Product not found"
 
-        if str(productExists["createdBy"]) != userId:
+        if str(ObjectId(productExists["createdBy"])) != userId:
             return None, "Not authorized to update this product"
 
         productUpdated = await Product.update_one({"_id": ObjectId(id)}, {"$set": remove_none_values(payload)})
@@ -53,7 +53,7 @@ async def updateProduct(id: str, userId: str, payload: dict):
 
         updatedProduct = await Product.find_one({"_id": ObjectId(id)})
 
-        await productUpdatedPublisher("product_updated", updatedProduct)
+        await productUpdatedPublisher("ProductUpdated", updatedProduct)
 
         return productUpdated, None
     except Exception as e:

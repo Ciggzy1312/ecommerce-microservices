@@ -1,19 +1,33 @@
+from bson import ObjectId
 from events.publisher.base import basePublisher
+from serializers.product import product_serializer
 
-async def productCreatedPublisher(topicName: str, data):
-    message, error = await basePublisher(topicName, data)
+async def productCreatedPublisher(exchangeName: str, product):
+
+    data = {
+        "_id": str(ObjectId(product["_id"])),
+        "name": product["name"],
+        "price": product["price"]
+    }
+
+    message, error = await basePublisher(exchangeName, data)
 
     if error:
         print(error)
 
     print(message)
-    return
 
-async def productUpdatedPublisher(topicName: str, data):
-    message, error = await basePublisher(topicName, data)
+async def productUpdatedPublisher(exchangeName: str, product):
+
+    data = {
+        "_id": str(ObjectId(product["_id"])),
+        "name": product["name"],
+        "price": product["price"]
+    }
+
+    message, error = await basePublisher(exchangeName, data)
 
     if error:
         print(error)
 
     print(message)
-    return

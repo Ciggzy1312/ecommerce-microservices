@@ -9,3 +9,4 @@ except Exception:
 
 db = client.order
 Order = db.order
+Product = db.product

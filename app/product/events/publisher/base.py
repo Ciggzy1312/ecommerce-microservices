@@ -1,29 +1,12 @@
-import os
-from dotenv import load_dotenv
-import boto3
-import json
-from serializers.product import product_serializer
+import aio_pika
 
-load_dotenv()
-region = os.environ["AWS_REGION"]
-access_key = os.environ["AWS_ACCESS_KEY"]
-secret_key = os.environ["AWS_SECRET_KEY"]
-
-async def basePublisher(topicName: str, data):
+async def basePublisher(exchangeName: str, data):
     try:
-        sns = boto3.client(
-            'sns',
-            region_name=region,
-            aws_access_key_id=access_key,
-            aws_secret_access_key=secret_key
-        )
+        connection = await aio_pika.connect_robust("amqp://guest:guest@rabbitmq-srv/")
+        channel = await connection.channel()
+        exchange = await channel.declare_exchange(exchangeName, aio_pika.ExchangeType.FANOUT)
+        await exchange.publish(aio_pika.Message(body=str(data).encode()), routing_key="")
 
-        response = sns.create_topic(Name=topicName)
-        msg = sns.publish(
-            TopicArn=response['TopicArn'],
-            Message=json.dumps(product_serializer(data)),
-        )
-
-        return f"Message published to {topicName}", None
+        return f"Message sent to {exchangeName} exchange", None
     except Exception as e:
-        return None, e
+        return None, str(e)

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-depl
+  labels:
+    app: ms-rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-rabbitmq
+  template:
+    metadata:
+      labels:
+        app: ms-rabbitmq
+    spec:
+      containers:
+      - name: ms-rabbitmq
+        image: rabbitmq:3-management
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-srv
+spec:
+  selector:
+    app: ms-rabbitmq
+  ports:
+    - name: ms-rabbitmq-mgmt
+      protocol: TCP
+      port: 15672
+      targetPort: 15672
+    - name: ms-rabbitmq
+      protocol: TCP
+      port: 5672
+      targetPort: 5672

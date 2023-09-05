@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rabbit-ingress-srv
+spec:
+  rules:
+    - host: "rabbitmq-manager.dev"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rabbitmq-srv
+                port:
+                  number: 15672
