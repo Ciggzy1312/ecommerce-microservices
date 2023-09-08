@@ -12,3 +12,4 @@ async def startup_event():
     await baseSubscriber("ProductCreated", "Order_ProductCreated")
     await baseSubscriber("ProductUpdated", "Order_ProductUpdated")
     await baseSubscriber("OrderExpired", "Order_OrderExpired")
+    await baseSubscriber("PaymentCompleted", "Order_PaymentCompleted")

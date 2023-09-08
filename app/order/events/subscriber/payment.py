@@ -1,15 +1,14 @@
 import ast
 from bson import ObjectId
 from utils.validator import remove_none_values
-from services.order import cancelOrder
+from services.order import completeOrder
 
 from utils.database import Product
 
-async def orderExpiredSubscriber(payload):
+async def paymentCompletedSubscriber(payload):
     try:
         payload = ast.literal_eval(payload)
-        
-        message, error = await cancelOrder(payload["_id"], ObjectId(payload["createdBy"]))
+        message, error = await completeOrder(payload["orderId"], ObjectId(payload["createdBy"]))
         if error:
             return None, error
 

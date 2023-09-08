@@ -113,16 +113,17 @@ async def cancelOrder(id: str, userId: str):
     try:
         orderExists = await Order.find_one({"_id": ObjectId(id)})
         if not orderExists:
-            return None, "Order not found"
+            return "Order not found", None
 
         if ObjectId(orderExists["createdBy"]) != userId:
-            return None, "Not authorized to cancel this order"
+            return "Not authorized to cancel this order", None
 
         if orderExists["status"] == "COMPLETED":
-            return None, "Order is already completed"
+            await orderCancelledPublisher("OrderCancelled", orderCancelled[0])
+            return "Order is already completed", None
 
         if orderExists["status"] == "CANCELLED":
-            return None, "Order is already cancelled"
+            return "Order is already cancelled", None
 
         order = await Order.update_one({"_id": ObjectId(id)}, {"$set": {"status": "CANCELLED"}})
         if not order:
@@ -148,6 +149,30 @@ async def cancelOrder(id: str, userId: str):
 
         await orderCancelledPublisher("OrderCancelled", orderCancelled[0])
 
-        return order, None
+        return "Successfully expired order", None
+    except Exception as e:
+        return None, str(e)
+
+
+async def completeOrder(id: str, userId: str):
+    try:
+        orderExists = await Order.find_one({"_id": ObjectId(id)})
+        if not orderExists:
+            return "Order not found", None
+
+        if ObjectId(orderExists["createdBy"]) != userId:
+            return "Not authorized to complete this order", None
+
+        if orderExists["status"] == "COMPLETED":
+            return "Order is already completed", None
+
+        if orderExists["status"] == "CANCELLED":
+            return "Order is already cancelled", None
+
+        order = await Order.update_one({"_id": ObjectId(id)}, {"$set": {"status": "COMPLETED"}})
+        if not order:
+            return None, "Error completing order"
+
+        return "Successfully completed order", None
     except Exception as e:
         return None, str(e)
