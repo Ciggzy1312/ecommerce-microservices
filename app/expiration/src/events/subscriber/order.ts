@@ -1,3 +1,4 @@
+import { expirationQueue } from "../../queues/expiration";
 import log from "../../utils/logger";
 
 
@@ -5,11 +6,14 @@ export async function orderConsumer (queueName: string, message: any) {
     try {
         const delay = new Date(message.expiresAt).getTime() - new Date().getTime();
 
-        console.log(delay)
+        await expirationQueue.add({
+            _id: message._id,
+            createdBy: message.createdBy,
+        }, {
+            delay
+        });
 
-        
-        console.log("Expiration job ", message);
-        console.log(message._id);
+        log.info({ message: "Expiration job created" });
     } catch (error: any) {
         log.error({ message: "Error while creating expiration job", error });
     }
