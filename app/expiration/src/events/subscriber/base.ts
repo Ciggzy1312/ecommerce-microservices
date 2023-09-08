@@ -18,7 +18,7 @@ export async function baseConsumer (exchangeName: string, queueName: string) {
                 let message = JSON.parse(msg.content.toString().replace(/'/g, '"'));
 
                 if (exchangeName === "OrderCreated") {
-                    await orderConsumer(queueName, message);
+                    await orderConsumer(message);
                     channel.ack(msg);
                 }
             }

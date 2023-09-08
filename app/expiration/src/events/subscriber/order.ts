@@ -2,7 +2,7 @@ import { expirationQueue } from "../../queues/expiration";
 import log from "../../utils/logger";
 
 
-export async function orderConsumer (queueName: string, message: any) {
+export async function orderConsumer (message: any) {
     try {
         const delay = new Date(message.expiresAt).getTime() - new Date().getTime();
 
