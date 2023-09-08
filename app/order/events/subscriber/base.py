@@ -1,5 +1,6 @@
 import aio_pika
 from events.subscriber.product import productCreatedSubscriber, productUpdatedSubscriber
+from events.subscriber.expiration import orderExpiredSubscriber
 
 async def on_message(msg: aio_pika.IncomingMessage):
     exchangeName = msg.exchange
@@ -19,6 +20,15 @@ async def on_message(msg: aio_pika.IncomingMessage):
             print(error)
             return
 
+        print(message)
+        await msg.ack()
+
+    elif exchangeName == "OrderExpired":
+        message, error = await orderExpiredSubscriber(msg.body.decode("utf-8"))
+        if error:
+            print(error)
+            return
+        
         print(message)
         await msg.ack()
 

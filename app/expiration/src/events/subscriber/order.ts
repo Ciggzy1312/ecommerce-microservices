@@ -12,8 +12,7 @@ export async function orderConsumer (message: any) {
         }, {
             delay
         });
-
-        log.info({ message: "Expiration job created" });
+        
     } catch (error: any) {
         log.error({ message: "Error while creating expiration job", error });
     }

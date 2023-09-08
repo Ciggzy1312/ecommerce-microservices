@@ -118,6 +118,12 @@ async def cancelOrder(id: str, userId: str):
         if ObjectId(orderExists["createdBy"]) != userId:
             return None, "Not authorized to cancel this order"
 
+        if orderExists["status"] == "COMPLETED":
+            return None, "Order is already completed"
+
+        if orderExists["status"] == "CANCELLED":
+            return None, "Order is already cancelled"
+
         order = await Order.update_one({"_id": ObjectId(id)}, {"$set": {"status": "CANCELLED"}})
         if not order:
             return None, "Error cancelling order"
