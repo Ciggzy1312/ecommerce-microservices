@@ -8,6 +8,7 @@ export async function orderCreatedConsumer (message: any) {
             price: message.product.price,
             status: message.status,
             createdBy: message.createdBy,
+            productId: message.product._id
         })
 
         log.info({ message: "Order for payment created successfully", order });

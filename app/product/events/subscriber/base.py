@@ -1,5 +1,6 @@
 import aio_pika
 from events.subscriber.order import orderCreatedSubscriber, orderCancelledSubscriber
+from events.subscriber.payment import paymentCompletedSubscriber
 
 async def on_message(msg: aio_pika.IncomingMessage):
     exchangeName = msg.exchange
@@ -19,6 +20,15 @@ async def on_message(msg: aio_pika.IncomingMessage):
             print(error)
             return
 
+        print(message)
+        await msg.ack()
+
+    elif exchangeName == "PaymentCompleted":
+        message, error = await paymentCompletedSubscriber(msg.body.decode("utf-8"))
+        if error:
+            print(error)
+            return
+        
         print(message)
         await msg.ack()
 

@@ -35,6 +35,7 @@ export const createPayment = async (input: PaymentInput, id: string) => {
         const payment = await Payment.create({
             orderId: input.orderId,
             createdBy: id,
+            productId: order.productId,
         });
 
         await Order.findByIdAndUpdate(input.orderId, { status: "COMPLETED" });

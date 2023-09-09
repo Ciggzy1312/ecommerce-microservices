@@ -119,7 +119,6 @@ async def cancelOrder(id: str, userId: str):
             return "Not authorized to cancel this order", None
 
         if orderExists["status"] == "COMPLETED":
-            await orderCancelledPublisher("OrderCancelled", orderCancelled[0])
             return "Order is already completed", None
 
         if orderExists["status"] == "CANCELLED":

@@ -18,6 +18,10 @@ const orderSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    productId: {
+        type: String,
+        required: true,
+    },
 },{ _id : false });
 
 export const Order = mongoose.model("Order", orderSchema);

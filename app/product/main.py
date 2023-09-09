@@ -11,3 +11,4 @@ app.include_router(router)
 async def startup_event():
     await baseSubscriber("OrderCreated", "Product_OrderCreated")
     await baseSubscriber("OrderCancelled", "Product_OrderCancelled")
+    await baseSubscriber("PaymentCompleted", "Product_PaymentCompleted")
