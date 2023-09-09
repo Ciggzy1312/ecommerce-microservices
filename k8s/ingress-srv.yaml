@@ -29,3 +29,10 @@ spec:
             name: order-srv
             port:
               number: 8002
+      - path: /api/payment
+        pathType: Prefix
+        backend:
+          service:
+            name: payment-srv
+            port:
+              number: 8003

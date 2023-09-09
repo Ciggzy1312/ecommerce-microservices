@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expiration-depl
+  labels:
+    app: ms-expiration
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-expiration
+  template:
+    metadata:
+      labels:
+        app: ms-expiration
+    spec:
+      containers:
+      - name: ms-expiration
+        image: ciggzy/ms-expiration
+        imagePullPolicy: Never

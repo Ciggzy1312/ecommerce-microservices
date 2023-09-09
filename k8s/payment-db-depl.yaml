@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-db-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-payment-db
+  template:
+    metadata:
+      labels:
+        app: ms-payment-db
+    spec:
+      containers:
+      - name: ms-payment-db
+        image: mongo
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-db-srv
+spec:
+  selector:
+    app: ms-payment-db
+  ports:
+    - name: ms-payment-db
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
