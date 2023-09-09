@@ -2,7 +2,7 @@ import amqp from 'amqplib';
 import log from '../../utils/logger';
 import { orderConsumer } from './order';
 
-const connectURL = "amqp://localhost:5672";
+const connectURL = "amqp://rabbitmq-srv:5672";
 
 export async function baseConsumer (exchangeName: string, queueName: string) {
     try {

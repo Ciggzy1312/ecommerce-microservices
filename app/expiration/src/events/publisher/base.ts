@@ -1,6 +1,6 @@
 import amqp from 'amqplib';
 
-const connectURL = "amqp://localhost:5672";
+const connectURL = "amqp://rabbitmq-srv:5672";
 
 export async function basePublisher (exchangeName: string, data: any) {
     try {
