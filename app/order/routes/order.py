@@ -46,8 +46,8 @@ async def getOrderHandler(id: str, currentUser: dict = Depends(get_current_user)
 # Cancel Order -> PUT /api/order/{id}
 @router.put("/{id}")
 async def cancelOrderHandler(id: str, currentUser: dict = Depends(get_current_user)):
-    order, error = await cancelOrder(id, ObjectId(currentUser["id"]))
+    message, error = await cancelOrder(id, ObjectId(currentUser["id"]))
     if error:
         return JSONResponse(status_code=400, content={"message": error})
 
-    return JSONResponse(status_code=200, content={"message": "Order cancelled successfully"})
+    return JSONResponse(status_code=200, content={"message": message})

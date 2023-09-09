@@ -16,7 +16,7 @@ async def createOrder(payload: dict):
             return None, "Product not found"
 
         # Check if product is reserved
-        productReserved = await Order.find_one({"productId": ObjectId(payload["productId"]), "status": {"$ne": "CANCELLED"}})
+        productReserved = await Order.find_one({"productId": ObjectId(payload["productId"]), "status": {"$in": ["CREATED"]}})
         if productReserved:
             return None, "Product is reserved"
 
